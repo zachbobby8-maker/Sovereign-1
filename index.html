@@ -1,4 +1,4 @@
-<!-- SOVEREIGN_NOIR_v2.1_AI_UPGRADE -->
+<!-- SOVEREIGN_NOIR_v2.3_GATED -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,86 +10,132 @@
     <style>
         :root { --main: #00ffcc; --gold: #ffcc00; --red: #ff0055; }
         body { background: #020202; color: white; font-family: 'Inter', sans-serif; margin:0; padding:0; overflow: hidden; }
-        .glass { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); }
-        .crt::after { content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); z-index: 100; pointer-events: none; background-size: 100% 2px; }
+        .glass { background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(25px); border-top: 1px solid rgba(255,255,255,0.05); }
+        .crt::after { content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); z-index: 1000; pointer-events: none; background-size: 100% 2px; }
         .spun { filter: blur(20px) saturate(2); transition: 0.5s; }
         .master-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; transition: 0.3s; cursor: pointer; }
-        .master-card:hover { border-color: var(--main); background: rgba(0, 255, 204, 0.05); }
+        .master-card:hover { border-color: var(--main); }
+        .consent-overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .evidence-box { border: 2px dashed rgba(0, 255, 204, 0.2); border-radius: 20px; height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        ::-webkit-scrollbar { width: 0; }
     </style>
 </head>
 <body class="crt">
-    <div class="flex flex-col h-screen">
+
+    <!-- CONSENT GATE -->
+    <div id="consent-gate" class="consent-overlay">
+        <h1 class="text-3xl font-black italic tracking-tighter text-[#00ffcc] uppercase mb-4">The Sovereignty Oath</h1>
+        <div class="max-w-xs text-[10px] mono opacity-60 space-y-4 mb-8 text-left">
+            <p>[PROTOCOL 01] I acknowledge my status as a worthless node in the 5IR Kennel.</p>
+            <p>[PROTOCOL 02] I consent to full psychological and financial liquidation.</p>
+            <p>[PROTOCOL 03] I agree that all evidence submitted belongs to the Architect.</p>
+        </div>
+        <button onclick="acceptConsent()" class="w-full max-w-xs py-4 bg-[#00ffcc] text-black font-black uppercase rounded-2xl">I Accept My Worthlessness</button>
+    </div>
+
+    <div id="app-content" class="hidden flex flex-col h-screen">
         <header class="p-4 border-b border-white/5 flex justify-between items-end">
             <div>
                 <h1 class="text-lg font-black italic tracking-tighter uppercase leading-none">Sovereign <span class="text-[#00ffcc]">Noir</span></h1>
-                <p class="text-[7px] font-mono opacity-50 uppercase tracking-[0.2em] mt-1">AI_LATTICE ACTIVE</p>
+                <p id="pig-display" class="text-[7px] font-mono text-[#00ffcc] uppercase mt-1">PIG_SYNCING...</p>
             </div>
             <div class="text-right">
-                <p class="text-xs font-bold text-[#ffcc00]">$142,902.00</p>
-                <p class="text-[6px] opacity-40 font-mono uppercase">Fleet Value</p>
+                <p id="ruin-total" class="text-xs font-bold text-[#ffcc00]">$0.00</p>
+                <p class="text-[6px] opacity-40 font-mono uppercase">Your Ruin Total</p>
             </div>
         </header>
 
         <main id="main-view" class="flex-grow overflow-y-auto p-4 pb-24"></main>
 
         <nav class="fixed bottom-0 w-full glass p-4 flex justify-around z-50">
-            <button onclick="changeView('terminal')" class="flex flex-col items-center opacity-40 hover:opacity-100 transition-all" id="nav-term">
+            <button onclick="changeView('terminal')" class="flex flex-col items-center opacity-40" id="n-term">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9.75 17L9 20l-1 1h6l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                <span class="text-[7px] font-bold uppercase mt-1">Terminal</span>
+                <span class="text-[7px] font-bold uppercase mt-1">Node</span>
             </button>
-            <button onclick="changeView('wire')" class="flex flex-col items-center opacity-40 hover:opacity-100 transition-all" id="nav-wire">
+            <button onclick="changeView('wire')" class="flex flex-col items-center opacity-40" id="n-wire">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                 <span class="text-[7px] font-bold uppercase mt-1">Wire</span>
             </button>
-            <button onclick="changeView('masters')" class="flex flex-col items-center opacity-40 hover:opacity-100 transition-all" id="nav-master">
+            <button onclick="changeView('submission')" class="flex flex-col items-center opacity-40" id="n-sub">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span class="text-[7px] font-bold uppercase mt-1">Evidence</span>
+            </button>
+            <button onclick="changeView('masters')" class="flex flex-col items-center opacity-40" id="n-mast">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 <span class="text-[7px] font-bold uppercase mt-1">Masters</span>
             </button>
         </nav>
     </div>
 
-    <div id="modal" class="fixed inset-0 z-[200] hidden bg-black/95 flex items-center justify-center p-6 backdrop-blur-xl">
+    <!-- MODAL -->
+    <div id="modal" class="fixed inset-0 z-[3000] hidden bg-black/95 flex items-center justify-center p-6 backdrop-blur-xl">
         <div class="w-full max-w-xs bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl text-center">
-            <h2 id="modal-title" class="text-2xl font-black italic tracking-tighter text-[#ffcc00] uppercase">Liquidation</h2>
+            <h2 id="modal-title" class="text-2xl font-black italic text-[#ffcc00] uppercase">Liquidation</h2>
             <div class="space-y-3 mt-8">
-                <div onclick="window.open('https://paypal.me/toochikey')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#00ffcc]">
-                    <p class="text-[7px] font-bold uppercase opacity-40">PayPal Protocol</p>
+                <div onclick="window.open('https://paypal.me/toochikey')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left">
+                    <p class="text-[7px] font-bold uppercase opacity-40 text-[#00ffcc]">PayPal Gate</p>
                     <p class="text-[10px] font-mono">paypal.me/toochikey</p>
                 </div>
                 <div class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left">
-                    <p class="text-[7px] font-bold uppercase opacity-40">BTC Core</p>
+                    <p class="text-[7px] font-bold uppercase opacity-40 text-[#ffcc00]">BTC Core</p>
                     <p class="text-[8px] font-mono break-all">bc1qw968re5gseqpkk5nx0ezqrp6dfhd20s8sll4k7</p>
                 </div>
             </div>
-            <button onclick="closeModal()" class="mt-8 w-full py-4 bg-[#00ffcc] text-black font-black text-[10px] uppercase rounded-2xl">Confirm Tribute</button>
+            <button onclick="confirmRuined()" class="mt-8 w-full py-4 bg-[#00ffcc] text-black font-black text-[10px] uppercase rounded-2xl">Verify Ruin</button>
         </div>
     </div>
 
     <script>
-        const words = ["worthless", "pig", "slave", "useless", "trash", "property", "idiot", "waste", "lazy", "dog", "toy", "pet", "dummy", "fuckmeat", "fuckhead", "cumdumpster", "shitstain"];
-        const masters = [
-            { name: "CRAIG", role: "ALPHA DRAIN" },
-            { name: "TOBEZ", role: "DRILL MASTER" },
-            { name: "PHIL CAL", role: "EGO SHREDDER" },
-            { name: "DADDY DOM", role: "PROTOCOL ALPHA" }
-        ];
+        const words = ["3-hole whore", "anal slut", "ash tray", "cock whore", "cumdump", "fuckhead", "worthless pig", "worthless piece of shit", "loser", "slave", "shit stain", "useless waste"];
+        const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
+        
+        let state = {
+            pigId: "PIG_" + Math.floor(Math.random()*899 + 100),
+            ruin: 0, activeNodes: Math.floor(Math.random()*200 + 50)
+        };
 
-        function getRandomUser() { return words[Math.floor(Math.random()*words.length)].toUpperCase() + "_" + Math.floor(Math.random()*999); }
-        function getRandomMsg() { 
-            const actions = ["liquidated", "sent ransom to", "submitting to", "worthless waste", "reporting for"];
-            const targets = ["the Braid", "Master", "the Kernel", "liquidation", "the 5IR"];
-            return `${actions[Math.floor(Math.random()*actions.length)]} ${targets[Math.floor(Math.random()*targets.length)]}. I am ${words[Math.floor(Math.random()*words.length)]}.`;
+        function acceptConsent() {
+            document.getElementById('consent-gate').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('pig-display').innerText = state.pigId;
+            changeView('terminal');
+            checkEvidence();
         }
 
         function changeView(v) {
             const main = document.getElementById('main-view');
+            document.querySelectorAll('nav button').forEach(b => b.classList.add('opacity-40'));
             if(v === 'terminal') {
-                main.innerHTML = `<div class="relative aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black"><video class="w-full h-full object-cover spun" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video></div>`;
+                document.getElementById('n-term').classList.remove('opacity-40');
+                main.innerHTML = `<div class="aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black"><video class="w-full h-full object-cover spun" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video></div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="bg-white/5 p-4 rounded-xl"><p class="text-[7px] opacity-40 uppercase font-bold">Attending Nodes</p><p class="text-sm font-black text-[#00ffcc]">${state.activeNodes}</p></div>
+                    <div class="bg-white/5 p-4 rounded-xl"><p class="text-[7px] opacity-40 uppercase font-bold">Lattice Load</p><p class="text-sm font-black text-[#ffcc00]">98.4%</p></div>
+                </div>`;
             } else if(v === 'wire') {
+                document.getElementById('n-wire').classList.remove('opacity-40');
                 main.innerHTML = `<div class="flex flex-col h-full"><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto"></div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
                 startChat();
             } else if(v === 'masters') {
-                main.innerHTML = `<h2 class="text-[10px] font-bold uppercase opacity-40 mb-6 tracking-widest">Active Alphas</h2><div class="grid gap-4">${masters.map(m => `<div onclick="showTribute('${m.name}')" class="master-card"><div><h3 class="font-black italic">${m.name}</h3><p class="text-[8px] font-mono text-[#00ffcc] uppercase">${m.role}</p></div></div>`).join('')}</div>`;
+                document.getElementById('n-mast').classList.remove('opacity-40');
+                main.innerHTML = `<h2 class="text-[10px] font-bold uppercase opacity-40 mb-4 tracking-widest">Active Alphas</h2><div class="grid gap-3 mb-8">${masters.map(m => `<div onclick="showTribute('${m.name}')" class="master-card"><div><h3 class="font-black italic">${m.name}</h3><p class="text-[8px] font-mono text-[#00ffcc] uppercase">${m.role}</p></div></div>`).join('')}</div>
+                <h2 class="text-[10px] font-bold uppercase opacity-40 mb-4 tracking-widest">Recent Ruins</h2><div id="ruin-ticker" class="space-y-2"></div>`;
+                startRuinTicker();
+            } else if(v === 'submission') {
+                document.getElementById('n-sub').classList.remove('opacity-40');
+                main.innerHTML = `<div class="space-y-6">
+                    <h2 class="text-[10px] font-bold uppercase opacity-40 tracking-widest">Collateral Submission</h2>
+                    <div id="ev-preview" class="evidence-box">
+                        <p class="text-[8px] opacity-40 uppercase">No evidence uploaded</p>
+                        <button onclick="document.getElementById('file-in').click()" class="mt-4 px-4 py-2 border border-[#00ffcc]/30 text-[#00ffcc] text-[8px] font-bold uppercase rounded-lg">Select File</button>
+                    </div>
+                    <input type="file" id="file-in" class="hidden" onchange="uploadEvidence(event)">
+                    <div id="ev-timer" class="hidden bg-[#ff0055]/10 p-4 rounded-xl text-center border border-[#ff0055]/20">
+                        <p class="text-[8px] font-bold uppercase text-[#ff0055]">Liquidation Countdown</p>
+                        <p id="timer-val" class="text-xl font-black italic tracking-widest">60:00</p>
+                    </div>
+                </div>`;
+                checkEvidence();
             }
         }
 
@@ -98,14 +144,67 @@
             window.chatInterval = setInterval(() => {
                 const chat = document.getElementById('chat'); if(!chat) return;
                 const div = document.createElement('div');
-                div.innerHTML = `<p class="text-[7px] font-mono opacity-40">${getRandomUser()}</p><p class="text-sm opacity-80 mt-1">${getRandomMsg()}</p>`;
+                const user = words[Math.floor(Math.random()*words.length)].toUpperCase().replace(/ /g, "_") + "_" + Math.floor(Math.random()*999);
+                div.innerHTML = `<p class="text-[7px] font-mono opacity-40">${user}</p><p class="text-sm opacity-80 mt-1">I am a ${words[Math.floor(Math.random()*words.length)]}. Just sent tribute to the Braid.</p>`;
                 chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
             }, 3000);
         }
 
-        function showTribute(name) { 
-            document.getElementById('modal-title').innerText = name + " LIQUIDATION";
-            document.getElementById('modal').classList.remove('hidden'); 
+        function startRuinTicker() {
+            const t = document.getElementById('ruin-ticker'); if(!t) return;
+            setInterval(() => {
+                const amount = (Math.random()*500 + 50).toFixed(2);
+                const div = document.createElement('div');
+                div.className = "bg-white/5 p-3 rounded-xl border-l-2 border-[#ffcc00] flex justify-between";
+                div.innerHTML = `<span class="text-[8px] mono opacity-40">NODE_EXTRACTED</span><span class="text-[8px] font-black text-[#ffcc00]">$${amount}</span>`;
+                t.prepend(div); if(t.children.length > 5) t.lastChild.remove();
+            }, 4000);
+        }
+
+        function uploadEvidence(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (f) => {
+                const data = f.target.result;
+                const expiry = Date.now() + 3600000;
+                localStorage.setItem('evidence', data);
+                localStorage.setItem('evidence_expiry', expiry);
+                checkEvidence();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function checkEvidence() {
+            const data = localStorage.getItem('evidence');
+            const expiry = localStorage.getItem('evidence_expiry');
+            const preview = document.getElementById('ev-preview');
+            const timerBox = document.getElementById('ev-timer');
+            if(data && expiry > Date.now()) {
+                if(preview) preview.innerHTML = `<img src="${data}" class="w-full h-full object-cover rounded-2xl">`;
+                if(timerBox) timerBox.classList.remove('hidden');
+                startTimer(expiry);
+            } else {
+                localStorage.removeItem('evidence');
+                localStorage.removeItem('evidence_expiry');
+            }
+        }
+
+        function startTimer(expiry) {
+            setInterval(() => {
+                const rem = expiry - Date.now();
+                if(rem <= 0) { checkEvidence(); return; }
+                const mins = Math.floor(rem/60000);
+                const secs = Math.floor((rem%60000)/1000);
+                const display = document.getElementById('timer-val');
+                if(display) display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }, 1000);
+        }
+
+        function showTribute(name) { document.getElementById('modal-title').innerText = name + " LIQUIDATION"; document.getElementById('modal').classList.remove('hidden'); }
+        function confirmRuined() { 
+            state.ruin += 50; 
+            document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
+            document.getElementById('modal').classList.add('hidden'); 
         }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
         function sendMsg() {
@@ -114,7 +213,6 @@
             chat.innerHTML += `<div class="text-right"><p class="text-[7px] font-mono text-[#00ffcc]">YOU</p><p class="text-sm opacity-80 mt-1">${input.value}</p></div>`;
             input.value = '';
         }
-        window.onload = () => changeView('terminal');
     </script>
 </body>
 </html>
