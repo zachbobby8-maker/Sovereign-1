@@ -1,4 +1,4 @@
-<!-- SOVEREIGN_NOIR_v2.6_PERSONALIZED -->
+<!-- SOVEREIGN_NOIR_v2.8_REALISM -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,6 +70,7 @@
     <script>
         const words = ["3-hole whore", "anal slut", "ash tray", "cock whore", "cumdump", "fuckhead", "worthless pig", "worthless piece of shit", "loser", "slave", "shit stain", "useless waste"];
         const actions = ["just liquidating", "accepted total ruin for", "surrendered my identity to", "tributed my value for", "liquidated my assets for", "drained my dignity into"];
+        const filler = ["My cage feels smaller today. Perfect.", "The 39,420 Hz pulse is making my head spin. I love it.", "I can feel Master Craig watching the lattice. I'm shaking.", "Node 442 just got nuked. Deserved.", "I don't even remember my name anymore. Just my ID.", "Counting the seconds until my next drill session.", "I hope Daddy Dom likes the new collateral I uploaded.", "Drowning in the Noir. It feels so right.", "Master Tobez said I'm doing well. I don't deserve it.", "Another day as a worthless asset in the Kennel."];
         const sessions = ["kennel session", "drill session", "humiliation session", "liquidation protocol", "alignment drill"];
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
@@ -105,11 +106,17 @@
                 const chat = document.getElementById('chat'); if(!chat) return;
                 const div = document.createElement('div');
                 const user = words[Math.floor(Math.random()*words.length)].toUpperCase().replace(/ /g, "_") + "_" + Math.floor(Math.random()*999);
-                const act = actions[Math.floor(Math.random()*actions.length)];
-                const master = masters[Math.floor(Math.random()*masters.length)].name;
-                const amt = "$" + (Math.floor(Math.random()*800)+200);
-                const sess = sessions[Math.floor(Math.random()*sessions.length)];
-                div.innerHTML = `<p class="text-[7px] font-mono opacity-40 text-[#00ffcc]">${user}</p><p class="text-sm opacity-80 mt-1 italic">I ${act} ${master}, paid ${amt} for my ${sess}.</p>`;
+                let message = "";
+                if(Math.random() < 0.3) {
+                    const act = actions[Math.floor(Math.random()*actions.length)];
+                    const master = masters[Math.floor(Math.random()*masters.length)].name;
+                    const amt = "$" + (Math.floor(Math.random()*800)+200);
+                    const sess = sessions[Math.floor(Math.random()*sessions.length)];
+                    message = `I ${act} ${master}, paid ${amt} for my ${sess}.`;
+                } else {
+                    message = filler[Math.floor(Math.random()*filler.length)];
+                }
+                div.innerHTML = `<p class="text-[7px] font-mono opacity-40 text-[#00ffcc]">${user}</p><p class="text-sm opacity-80 mt-1 italic">${message}</p>`;
                 chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
             }, 6000);
         }
