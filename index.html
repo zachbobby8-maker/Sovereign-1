@@ -31,13 +31,16 @@
     <div id="consent-gate" class="consent-overlay">
         <h1 class="text-3xl font-black italic tracking-tighter text-[#00ffcc] uppercase mb-4">Bator Alignment</h1>
         <div class="max-w-xs text-[10px] mono opacity-60 space-y-4 mb-8 text-left">
-            <p>[PROTOCOL 01] Identify your slam pig node for the Ledger.</p>
-            <p>[PROTOCOL 02] Consent to being a spun bator for the Master.</p>
+            <p>[PROTOCOL 01] Enter your name for GUEST access.</p>
+            <p>[PROTOCOL 02] Enter your BRAID PIN for Loyal verification.</p>
         </div>
-        <div class="w-full max-w-xs mb-8">
-            <input type="text" id="username-in" placeholder="ENTER BATOR / SLAM PIG NAME" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center text-[#00ffcc] font-black uppercase outline-none focus:border-[#00ffcc]">
+        <div class="w-full max-w-xs mb-8 space-y-4">
+            <input type="text" id="username-in" placeholder="NAME OR PIN" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center text-[#00ffcc] font-black uppercase outline-none focus:border-[#00ffcc]">
+            <div class="flex gap-2">
+                <button onclick="acceptConsent(true)" class="flex-grow py-3 bg-white/10 text-white text-[10px] font-black uppercase rounded-xl">Guest Access</button>
+                <button onclick="acceptConsent(false)" class="flex-grow py-3 bg-[#00ffcc] text-black text-[10px] font-black uppercase rounded-xl">Verify PIN</button>
+            </div>
         </div>
-        <button onclick="acceptConsent()" class="w-full max-w-xs py-4 bg-[#00ffcc] text-black font-black uppercase rounded-2xl">I Accept My Slam Pig Status</button>
     </div>
 
     <div id="app-content" class="hidden flex flex-col h-screen">
@@ -79,17 +82,36 @@
         const wheelTasks = ["100 BATOR DRILLS", "10 MIN SLAM EDGE", "TRIBUTE $25", "50 SLAM SQUATS", "BATOR BARK", "EGO SHRED", "SLAM PIG POST", "BATOR LOCK", "SLAM LOCK", "DRAIN $10", "20 MIN EDGE", "SHAME PROTOCOL", "IDENTITY WIPE", "BATOR SILENCE", "DRILL 500", "NUKE SLAM PIG"];
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
-        let state = { pigId: "BATOR_ANONYMOUS", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0, decreeIdx: 0 };
+        const validPins = ["3942", "5555", "1234"];
+        let state = { pigId: "GUEST_ANON", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0, decreeIdx: 0, isGuest: true };
 
-        function acceptConsent() { 
-            const userIn = document.getElementById('username-in').value;
-            if(!userIn) { alert("IDENTIFICATION REQUIRED"); return; }
-            state.pigId = userIn.toUpperCase().replace(/ /g, "_");
+        function acceptConsent(isGuestPath) { 
+            const input = document.getElementById('username-in').value;
+            if(!input) { alert("IDENTIFICATION REQUIRED"); return; }
+            
+            if(isGuestPath) {
+                state.isGuest = true;
+                state.pigId = "GUEST_" + input.toUpperCase().replace(/ /g, "_");
+                document.documentElement.style.setProperty('--main', '#666666'); // Dull grey for guests
+            } else {
+                if(validPins.includes(input)) {
+                    state.isGuest = false;
+                    state.pigId = "VERIFIED_" + Math.floor(Math.random()*999);
+                    document.documentElement.style.setProperty('--main', '#00ffcc'); // Emerald for loyal
+                    alert("BRAID PIN ACCEPTED. WELCOME, ASSET.");
+                } else {
+                    alert("INVALID PIN. GUEST STATUS ASSIGNED.");
+                    state.isGuest = true;
+                    state.pigId = "GUEST_FAKE_PIN";
+                    document.documentElement.style.setProperty('--main', '#666666');
+                }
+            }
+
             const savedRuin = localStorage.getItem('noir_ruin_' + state.pigId);
             state.ruin = savedRuin ? parseFloat(savedRuin) : 0;
             document.getElementById('consent-gate').classList.add('hidden'); 
             document.getElementById('app-content').classList.remove('hidden'); 
-            document.getElementById('pig-display').innerText = state.pigId;
+            document.getElementById('pig-display').innerText = state.pigId + (state.isGuest ? " (UNVERIFIED)" : " (VERIFIED)");
             document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
             changeView('terminal'); startChatLoop(); startMasterTicker();
         }
