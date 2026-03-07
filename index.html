@@ -1,4 +1,4 @@
-<!-- SOVEREIGN_NOIR_v2.9_PERSISTENT -->
+<!-- SOVEREIGN_NOIR_v3.0_IDENTITY_LOCK -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,8 +29,11 @@
     <div id="consent-gate" class="consent-overlay">
         <h1 class="text-3xl font-black italic tracking-tighter text-[#00ffcc] uppercase mb-4">The Sovereignty Oath</h1>
         <div class="max-w-xs text-[10px] mono opacity-60 space-y-4 mb-8 text-left">
-            <p>[PROTOCOL 01] I acknowledge my status as a worthless node.</p>
-            <p>[PROTOCOL 02] I consent to full financial and mental ruin.</p>
+            <p>[PROTOCOL 01] Identify your node for the Kennel Ledger.</p>
+            <p>[PROTOCOL 02] Consent to full financial and mental ruin.</p>
+        </div>
+        <div class="w-full max-w-xs mb-8">
+            <input type="text" id="username-in" placeholder="ENTER PIG USERNAME" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center text-[#00ffcc] font-black uppercase outline-none focus:border-[#00ffcc]">
         </div>
         <button onclick="acceptConsent()" class="w-full max-w-xs py-4 bg-[#00ffcc] text-black font-black uppercase rounded-2xl">I Accept My Ruin</button>
     </div>
@@ -77,13 +80,29 @@
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
         let state = { 
-            pigId: "PIG_" + Math.floor(Math.random()*899+100), 
+            pigId: "PIG_ANONYMOUS", 
             ruin: 0, 
             activeNodes: Math.floor(Math.random()*200+50),
             chatHistory: ""
         };
 
-        function acceptConsent() { document.getElementById('consent-gate').classList.add('hidden'); document.getElementById('app-content').classList.remove('hidden'); document.getElementById('pig-display').innerText = state.pigId; changeView('terminal'); startChatLoop(); }
+        function acceptConsent() { 
+            const userIn = document.getElementById('username-in').value;
+            if(!userIn) { alert("IDENTIFICATION REQUIRED"); return; }
+            state.pigId = userIn.toUpperCase().replace(/ /g, "_");
+            
+            // LOAD PERSISTENT RUIN
+            const savedRuin = localStorage.getItem('noir_ruin_' + state.pigId);
+            state.ruin = savedRuin ? parseFloat(savedRuin) : 0;
+            
+            document.getElementById('consent-gate').classList.add('hidden'); 
+            document.getElementById('app-content').classList.remove('hidden'); 
+            document.getElementById('pig-display').innerText = state.pigId;
+            document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
+            
+            changeView('terminal'); 
+            startChatLoop(); 
+        }
 
         function changeView(v) {
             const main = document.getElementById('main-view');
@@ -169,17 +188,26 @@
 
         function spinWheel() { const w = document.getElementById('wheel'); const deg = 1800 + Math.random() * 1800; w.style.transform = `rotate(${deg}deg)`; setTimeout(() => { showTribute("WHEEL PENALTY"); }, 4100); }
         function showTribute(name) { document.getElementById('modal-title').innerText = name + " LIQUIDATION"; document.getElementById('modal').classList.remove('hidden'); }
-        function confirmRuin() { state.ruin += 50; document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2); document.getElementById('modal').classList.add('hidden'); }
+        
+        function confirmRuin() { 
+            state.ruin += 50; 
+            document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
+            
+            // SAVE TO PERSISTENT LEDGER
+            localStorage.setItem('noir_ruin_' + state.pigId, state.ruin);
+            
+            document.getElementById('modal').classList.add('hidden'); 
+        }
+
         function sendMsg() { 
             const input = document.getElementById('msg-in'); if(!input.value) return;
             const chat = document.getElementById('chat');
-            const msgHtml = `<div class="text-right"><p class="text-[7px] font-mono text-[#00ffcc]">YOU</p><p class="text-sm opacity-80 mt-1 italic">${input.value}</p></div>`;
+            const msgHtml = `<div class="text-right"><p class="text-[7px] font-mono text-[#00ffcc]">YOU (${state.pigId})</p><p class="text-sm opacity-80 mt-1 italic">${input.value}</p></div>`;
             state.chatHistory += msgHtml;
             chat.innerHTML += msgHtml;
             chat.scrollTop = chat.scrollHeight;
             input.value = '';
         }
-        window.onload = () => {};
     </script>
 </body>
 </html>
