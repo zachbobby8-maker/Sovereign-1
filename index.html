@@ -1,4 +1,4 @@
-<!-- SOVEREIGN_NOIR_v3.1_HUMILIATION -->
+<!-- SOVEREIGN_NOIR_v3.2_PRECISION_WHEEL -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +21,7 @@
         .segment-label { position: absolute; width: 100%; text-align: center; top: 15px; left: 0; font-[7px] font-black uppercase tracking-tighter opacity-30 text-[#00ffcc]; transform-origin: 50% 160px; }
         .consent-overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         .evidence-box { border: 2px dashed rgba(0, 255, 204, 0.2); border-radius: 20px; height: 200px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--main); z-index: 50; }
         ::-webkit-scrollbar { width: 0; }
     </style>
 </head>
@@ -30,7 +31,7 @@
         <h1 class="text-3xl font-black italic tracking-tighter text-[#00ffcc] uppercase mb-4">The Sovereignty Oath</h1>
         <div class="max-w-xs text-[10px] mono opacity-60 space-y-4 mb-8 text-left">
             <p>[PROTOCOL 01] Identify your node for the Kennel Ledger.</p>
-            <p>[PROTOCOL 02] Consent to full financial and mental ruin.</p>
+            <p>[PROTOCOL 02] Consent to full physical and mental ruin.</p>
         </div>
         <div class="w-full max-w-xs mb-8">
             <input type="text" id="username-in" placeholder="ENTER PIG USERNAME" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-center text-[#00ffcc] font-black uppercase outline-none focus:border-[#00ffcc]">
@@ -63,23 +64,22 @@
 
     <div id="modal" class="fixed inset-0 z-[3000] hidden bg-black/95 flex items-center justify-center p-6 backdrop-blur-xl">
         <div class="w-full max-w-xs bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl text-center">
-            <h2 id="modal-title" class="text-2xl font-black italic text-[#ffcc00] uppercase tracking-tighter">Liquidation</h2>
-            <div class="space-y-3 mt-8">
-                <div onclick="window.open('https://paypal.me/toochikey')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#00ffcc]"><p class="text-[7px] font-bold uppercase opacity-40 text-[#00ffcc]">PayPal Gate</p><p class="text-[10px] font-mono">paypal.me/toochikey</p></div>
-                <div class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left"><p class="text-[7px] font-bold uppercase opacity-40 text-[#00ffcc]">BTC Core</p><p class="text-[8px] font-mono break-all">bc1qw968re5gseqpkk5nx0ezqrp6dfhd20s8sll4k7</p></div>
+            <h2 id="modal-title" class="text-2xl font-black italic text-[#ffcc00] uppercase tracking-tighter">Penalty</h2>
+            <div id="modal-body" class="mt-8 space-y-4">
+                <!-- DYNAMIC CONTENT -->
             </div>
-            <button onclick="confirmRuin()" class="mt-8 w-full py-4 bg-[#00ffcc] text-black font-black text-[10px] uppercase rounded-2xl">Confirm Tribute</button>
+            <button onclick="confirmRuin()" class="mt-8 w-full py-4 bg-[#00ffcc] text-black font-black text-[10px] uppercase rounded-2xl">Acknowledge Penalty</button>
         </div>
     </div>
 
     <script>
         const words = ["3-hole whore", "anal slut", "ash tray", "cock whore", "cumdump", "fuckhead", "worthless pig", "worthless piece of shit", "loser", "slave", "shit stain", "useless waste"];
         const actions = ["accepted total humiliation from", "begged for punishment from", "surrendered identity to", "liquidated pride for", "accepted shameful status for", "drained dignity for"];
-        const filler = ["I was forced to bark for Master Craig today. Pure shame.", "Master Phil Cal said my value is less than zero.", "Node 221 made me look like an absolute fool on the wire.", "Begging Master Tobez for a single rep on the drill.", "I am nothing but a kennel animal now.", "Countless rep drills and I still fail. Master is right to be disappointed.", "My cage is the only home I deserve.", "I hope Master Dom nukes my node for being so worthless.", "Just a pathetic asset in the Noir.", "I can feel the other pigs laughing at my failed edging session."];
+        const filler = ["Forced to bark for Master Craig.", "Value is less than zero.", "Pig status confirmed.", "Begging for a drill.", "I am a kennel animal.", "Master is right to be disappointed.", "My cage is my home.", "Deserve to be nuked.", "Pathetic Noir asset.", "Laughing at my failed edging."];
         const wheelTasks = ["100 REP DRILL", "10 MIN EDGE", "TRIBUTE $25", "50 REP SQUAT", "BARK FOR MASTER", "EGO SHRED", "HUMILIATION POST", "MOUTHPIECE LOCK", "KENNEL LOCK", "DRAIN $10", "20 MIN EDGE", "SHAME PROTOCOL", "IDENTITY WIPE", "SILENCE PROTOCOL", "DRILL 500", "NUKE NODE"];
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
-        let state = { pigId: "PIG_ANONYMOUS", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "" };
+        let state = { pigId: "PIG_ANONYMOUS", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0 };
 
         function acceptConsent() { 
             const userIn = document.getElementById('username-in').value;
@@ -106,7 +106,7 @@
                 main.innerHTML = `<div class="flex flex-col h-full"><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto">${state.chatHistory}</div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
                 const chat = document.getElementById('chat'); if(chat) chat.scrollTop = chat.scrollHeight;
             } else if(v === 'drill') {
-                main.innerHTML = `<div class="flex flex-col items-center py-4"><div class="wheel-container mb-8 flex items-center justify-center text-center" id="wheel"><div class="text-[#00ffcc] font-black text-[10px] uppercase z-10">Milking<br>Wheel</div>${wheelTasks.map((t,i)=>`<div class="wheel-segment" style="transform:rotate(${i*22.5}deg)"><div class="segment-line"></div><div class="segment-label" style="transform:rotate(11.25deg)">${t}</div></div>`).join('')}</div><button onclick="spinWheel()" class="bg-red-500 text-white px-12 py-4 rounded-2xl font-black italic tracking-tighter uppercase shadow-xl shadow-red-500/20">Spin for Master</button></div>`;
+                main.innerHTML = `<div class="flex flex-col items-center py-4"><div class="relative"><div class="wheel-pointer"></div><div class="wheel-container mb-8 flex items-center justify-center text-center" id="wheel" style="transform: rotate(${state.currentRotation}deg)"><div class="text-[#00ffcc] font-black text-[10px] uppercase z-10">Milking<br>Wheel</div>${wheelTasks.map((t,i)=>`<div class="wheel-segment" style="transform:rotate(${i*22.5}deg)"><div class="segment-line"></div><div class="segment-label" style="transform:rotate(11.25deg)">${t}</div></div>`).join('')}</div></div><button onclick="spinWheel()" class="bg-red-500 text-white px-12 py-4 rounded-2xl font-black italic tracking-tighter uppercase shadow-xl shadow-red-500/20">Spin for Master</button></div>`;
             } else if(v === 'submission') {
                 main.innerHTML = `<div class="space-y-6"><h2 class="text-[10px] font-bold uppercase opacity-40 tracking-widest text-[#00ffcc]">Evidence Submission</h2><div id="ev-preview" class="evidence-box cursor-pointer" onclick="document.getElementById('file-in').click()"><p class="text-[8px] opacity-40 uppercase">Click to upload collateral</p></div><input type="file" id="file-in" class="hidden" onchange="uploadEvidence(event)"><div id="ev-timer" class="hidden bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20"><p class="text-[8px] font-bold uppercase text-red-500">Liquidation Countdown</p><p id="timer-val" class="text-xl font-black italic tracking-widest">60:00</p></div></div>`;
                 checkEvidence();
@@ -119,19 +119,10 @@
         function startChatLoop() {
             setInterval(() => {
                 const user = words[Math.floor(Math.random()*words.length)].toUpperCase().replace(/ /g, "_") + "_" + Math.floor(Math.random()*999);
-                let message = "";
-                if(Math.random() < 0.15) {
-                    const act = actions[Math.floor(Math.random()*actions.length)];
-                    const master = masters[Math.floor(Math.random()*masters.length)].name;
-                    const amt = "$" + (Math.floor(Math.random()*90)+10);
-                    message = `I ${act} ${master}, paid ${amt} for my shameful drill.`;
-                } else {
-                    message = filler[Math.floor(Math.random()*filler.length)];
-                }
+                let message = (Math.random() < 0.15) ? `I ${actions[Math.floor(Math.random()*actions.length)]} ${masters[Math.floor(Math.random()*masters.length)].name}, paid $${Math.floor(Math.random()*90+10)} for my shameful drill.` : filler[Math.floor(Math.random()*filler.length)];
                 const msgHtml = `<div class="chat-msg"><p class="text-[7px] font-mono opacity-40 text-[#00ffcc]">${user}</p><p class="text-sm opacity-80 mt-1 italic">${message}</p></div>`;
                 state.chatHistory += msgHtml;
-                const chat = document.getElementById('chat');
-                if(chat) { chat.innerHTML += msgHtml; chat.scrollTop = chat.scrollHeight; }
+                const chat = document.getElementById('chat'); if(chat) { chat.innerHTML += msgHtml; chat.scrollTop = chat.scrollHeight; }
             }, 6000);
         }
 
@@ -146,14 +137,46 @@
             }, 4000);
         }
 
+        function spinWheel() {
+            const w = document.getElementById('wheel'); if(!w) return;
+            const extraDeg = 1800 + Math.floor(Math.random() * 1800);
+            state.currentRotation += extraDeg;
+            w.style.transform = `rotate(${state.currentRotation}deg)`;
+            setTimeout(() => {
+                const finalDeg = state.currentRotation % 360;
+                const index = Math.floor(((360 - finalDeg) % 360) / 22.5);
+                const task = wheelTasks[index];
+                showPenalty(task);
+            }, 4100);
+        }
+
+        function showPenalty(task) {
+            document.getElementById('modal-title').innerText = task;
+            const body = document.getElementById('modal-body');
+            if(task.includes("$")) {
+                body.innerHTML = `<p class="text-[10px] mono opacity-60">Monetary liquidation required.</p><div onclick="window.open('https://paypal.me/toochikey')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#00ffcc]"><p class="text-[7px] font-bold uppercase opacity-40 text-[#00ffcc]">PayPal Gate</p><p class="text-[10px] font-mono">paypal.me/toochikey</p></div>`;
+            } else {
+                body.innerHTML = `<p class="text-[10px] mono opacity-60">Physical/Psychological task assigned.</p><div class="p-6 bg-[#00ffcc]/5 border border-[#00ffcc]/20 rounded-2xl"><p class="text-lg font-black italic text-[#00ffcc]">${task}</p></div>`;
+            }
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function showTribute(name) { showPenalty(name + " LIQUIDATION $50"); }
+        function confirmRuin() { 
+            const title = document.getElementById('modal-title').innerText;
+            if(title.includes("$")) {
+                const amt = parseInt(title.match(/\d+/)[0]);
+                state.ruin += amt;
+                document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
+                localStorage.setItem('noir_ruin_' + state.pigId, state.ruin);
+            }
+            document.getElementById('modal').classList.add('hidden'); 
+        }
+
         function uploadEvidence(e) {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
-            reader.onload = (f) => {
-                localStorage.setItem('evidence', f.target.result);
-                localStorage.setItem('evidence_expiry', Date.now() + 3600000);
-                checkEvidence();
-            };
+            reader.onload = (f) => { localStorage.setItem('evidence', f.target.result); localStorage.setItem('evidence_expiry', Date.now() + 3600000); checkEvidence(); };
             reader.readAsDataURL(file);
         }
 
@@ -174,15 +197,6 @@
                 const mins = Math.floor(rem/60000), secs = Math.floor((rem%60000)/1000);
                 const d = document.getElementById('timer-val'); if(d) d.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
             }, 1000);
-        }
-
-        function spinWheel() { const w = document.getElementById('wheel'); const deg = 1800 + Math.random() * 1800; w.style.transform = `rotate(${deg}deg)`; setTimeout(() => { showTribute("WHEEL PENALTY"); }, 4100); }
-        function showTribute(name) { document.getElementById('modal-title').innerText = name + " LIQUIDATION"; document.getElementById('modal').classList.remove('hidden'); }
-        function confirmRuin() { 
-            state.ruin += (Math.floor(Math.random()*50)+10); 
-            document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
-            localStorage.setItem('noir_ruin_' + state.pigId, state.ruin);
-            document.getElementById('modal').classList.add('hidden'); 
         }
 
         function sendMsg() { 
