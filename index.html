@@ -1,4 +1,4 @@
-<!-- SOVEREIGN_NOIR_v2.8_REALISM -->
+<!-- SOVEREIGN_NOIR_v2.9_PERSISTENT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,8 +15,10 @@
         .spun { filter: blur(20px) saturate(2); transition: 0.5s; }
         .master-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; transition: 0.3s; cursor: pointer; }
         .master-card:hover { border-color: var(--main); background: rgba(0, 255, 204, 0.05); }
-        .wheel-container { width: 260px; height: 280px; border-radius: 50%; border: 4px solid var(--main); position: relative; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); box-shadow: 0 0 40px rgba(0, 255, 204, 0.1); }
-        .wheel-segment { position: absolute; width: 2px; height: 50%; background: rgba(0, 255, 204, 0.2); left: 50%; transform-origin: bottom; }
+        .wheel-container { width: 320px; height: 320px; border-radius: 50%; border: 4px solid var(--main); position: relative; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); box-shadow: 0 0 40px rgba(0, 255, 204, 0.1); overflow: hidden; }
+        .wheel-segment { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .segment-line { position: absolute; width: 2px; height: 50%; background: rgba(0, 255, 204, 0.2); left: 50%; transform-origin: bottom; }
+        .segment-label { position: absolute; width: 100%; text-align: center; top: 15px; left: 0; font-[7px] font-black uppercase tracking-tighter opacity-30 text-[#00ffcc]; transform-origin: 50% 160px; }
         .consent-overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         .evidence-box { border: 2px dashed rgba(0, 255, 204, 0.2); border-radius: 20px; height: 200px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         ::-webkit-scrollbar { width: 0; }
@@ -69,14 +71,19 @@
 
     <script>
         const words = ["3-hole whore", "anal slut", "ash tray", "cock whore", "cumdump", "fuckhead", "worthless pig", "worthless piece of shit", "loser", "slave", "shit stain", "useless waste"];
-        const actions = ["just liquidating", "accepted total ruin for", "surrendered my identity to", "tributed my value for", "liquidated my assets for", "drained my dignity into"];
-        const filler = ["My cage feels smaller today. Perfect.", "The 39,420 Hz pulse is making my head spin. I love it.", "I can feel Master Craig watching the lattice. I'm shaking.", "Node 442 just got nuked. Deserved.", "I don't even remember my name anymore. Just my ID.", "Counting the seconds until my next drill session.", "I hope Daddy Dom likes the new collateral I uploaded.", "Drowning in the Noir. It feels so right.", "Master Tobez said I'm doing well. I don't deserve it.", "Another day as a worthless asset in the Kennel."];
-        const sessions = ["kennel session", "drill session", "humiliation session", "liquidation protocol", "alignment drill"];
+        const actions = ["just liquidating", "accepted total ruin for", "surrendered identity to", "tributed value for", "liquidated assets for", "drained dignity into"];
+        const filler = ["My cage feels smaller today.", "39,420 Hz pulse is making my head spin.", "Master Craig is watching the lattice.", "Node 442 just got nuked.", "Counting seconds until next drill.", "Drowning in the Noir.", "Master Tobez said I'm doing well.", "Just another asset in the Kennel."];
+        const wheelTasks = ["100 REP DRILL", "10 MIN EDGE", "TRIBUTE $50", "50 REP SQUAT", "IDENTITY WIPE", "EGO SHRED", "COLLATERAL UPLOAD", "MOUTHPIECE LOCK", "KENNEL LOCK", "DRAIN $100", "20 MIN EDGE", "TOTAL SURRENDER", "ASSET REVEAL", "SILENCE PROTOCOL", "DRILL 500", "NUKE NODE"];
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
-        let state = { pigId: "PIG_" + Math.floor(Math.random()*899+100), ruin: 0, activeNodes: Math.floor(Math.random()*200+50) };
+        let state = { 
+            pigId: "PIG_" + Math.floor(Math.random()*899+100), 
+            ruin: 0, 
+            activeNodes: Math.floor(Math.random()*200+50),
+            chatHistory: ""
+        };
 
-        function acceptConsent() { document.getElementById('consent-gate').classList.add('hidden'); document.getElementById('app-content').classList.remove('hidden'); document.getElementById('pig-display').innerText = state.pigId; changeView('terminal'); }
+        function acceptConsent() { document.getElementById('consent-gate').classList.add('hidden'); document.getElementById('app-content').classList.remove('hidden'); document.getElementById('pig-display').innerText = state.pigId; changeView('terminal'); startChatLoop(); }
 
         function changeView(v) {
             const main = document.getElementById('main-view');
@@ -87,10 +94,10 @@
             if(v === 'terminal') {
                 main.innerHTML = `<div class="aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black"><video class="w-full h-full object-cover spun" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video></div><div class="mt-4 grid grid-cols-2 gap-3"><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#00ffcc]">Attending Nodes</p><p class="text-sm font-black text-[#00ffcc]">${state.activeNodes}</p></div><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#ffcc00]">Lattice Load</p><p class="text-sm font-black text-[#ffcc00]">98.4%</p></div></div>`;
             } else if(v === 'wire') {
-                main.innerHTML = `<div class="flex flex-col h-full"><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto"></div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
-                startChat();
+                main.innerHTML = `<div class="flex flex-col h-full"><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto">${state.chatHistory}</div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
+                const chat = document.getElementById('chat'); chat.scrollTop = chat.scrollHeight;
             } else if(v === 'drill') {
-                main.innerHTML = `<div class="flex flex-col items-center py-8"><div class="wheel-container mb-12 flex items-center justify-center text-center p-8" id="wheel"><div class="text-[#00ffcc] font-black text-xs uppercase">Milking<br>Wheel</div>${Array.from({length:16}).map((_,i)=>`<div class="wheel-segment" style="transform:rotate(${i*22.5}deg)"></div>`).join('')}</div><button onclick="spinWheel()" class="bg-red-500 text-white px-12 py-4 rounded-2xl font-black italic tracking-tighter uppercase shadow-xl shadow-red-500/20">Spin for Master</button></div>`;
+                main.innerHTML = `<div class="flex flex-col items-center py-4"><div class="wheel-container mb-8 flex items-center justify-center text-center" id="wheel"><div class="text-[#00ffcc] font-black text-[10px] uppercase z-10">Milking<br>Wheel</div>${wheelTasks.map((t,i)=>`<div class="wheel-segment" style="transform:rotate(${i*22.5}deg)"><div class="segment-line"></div><div class="segment-label" style="transform:rotate(11.25deg)">${t}</div></div>`).join('')}</div><button onclick="spinWheel()" class="bg-red-500 text-white px-12 py-4 rounded-2xl font-black italic tracking-tighter uppercase shadow-xl shadow-red-500/20">Spin for Master</button></div>`;
             } else if(v === 'submission') {
                 main.innerHTML = `<div class="space-y-6"><h2 class="text-[10px] font-bold uppercase opacity-40 tracking-widest text-[#00ffcc]">Evidence Submission</h2><div id="ev-preview" class="evidence-box cursor-pointer" onclick="document.getElementById('file-in').click()"><p class="text-[8px] opacity-40 uppercase">Click to upload collateral</p></div><input type="file" id="file-in" class="hidden" onchange="uploadEvidence(event)"><div id="ev-timer" class="hidden bg-red-500/10 p-4 rounded-xl text-center border border-red-500/20"><p class="text-[8px] font-bold uppercase text-red-500">Liquidation Countdown</p><p id="timer-val" class="text-xl font-black italic tracking-widest">60:00</p></div></div>`;
                 checkEvidence();
@@ -100,24 +107,22 @@
             }
         }
 
-        function startChat() {
-            if(window.chatInterval) clearInterval(window.chatInterval);
-            window.chatInterval = setInterval(() => {
-                const chat = document.getElementById('chat'); if(!chat) return;
-                const div = document.createElement('div');
+        function startChatLoop() {
+            setInterval(() => {
                 const user = words[Math.floor(Math.random()*words.length)].toUpperCase().replace(/ /g, "_") + "_" + Math.floor(Math.random()*999);
                 let message = "";
                 if(Math.random() < 0.3) {
                     const act = actions[Math.floor(Math.random()*actions.length)];
                     const master = masters[Math.floor(Math.random()*masters.length)].name;
                     const amt = "$" + (Math.floor(Math.random()*800)+200);
-                    const sess = sessions[Math.floor(Math.random()*sessions.length)];
-                    message = `I ${act} ${master}, paid ${amt} for my ${sess}.`;
+                    message = `I ${act} ${master}, paid ${amt} for my drill.`;
                 } else {
                     message = filler[Math.floor(Math.random()*filler.length)];
                 }
-                div.innerHTML = `<p class="text-[7px] font-mono opacity-40 text-[#00ffcc]">${user}</p><p class="text-sm opacity-80 mt-1 italic">${message}</p>`;
-                chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+                const msgHtml = `<div class="chat-msg"><p class="text-[7px] font-mono opacity-40 text-[#00ffcc]">${user}</p><p class="text-sm opacity-80 mt-1 italic">${message}</p></div>`;
+                state.chatHistory += msgHtml;
+                const chat = document.getElementById('chat');
+                if(chat) { chat.innerHTML += msgHtml; chat.scrollTop = chat.scrollHeight; }
             }, 6000);
         }
 
@@ -165,8 +170,16 @@
         function spinWheel() { const w = document.getElementById('wheel'); const deg = 1800 + Math.random() * 1800; w.style.transform = `rotate(${deg}deg)`; setTimeout(() => { showTribute("WHEEL PENALTY"); }, 4100); }
         function showTribute(name) { document.getElementById('modal-title').innerText = name + " LIQUIDATION"; document.getElementById('modal').classList.remove('hidden'); }
         function confirmRuin() { state.ruin += 50; document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2); document.getElementById('modal').classList.add('hidden'); }
-        function sendMsg() { const input = document.getElementById('msg-in'); if(!input.value) return; const chat = document.getElementById('chat'); chat.innerHTML += `<div class="text-right"><p class="text-[7px] font-mono text-[#00ffcc]">YOU</p><p class="text-sm opacity-80 mt-1 italic">${input.value}</p></div>`; input.value = ''; }
-        window.onload = () => acceptConsent();
+        function sendMsg() { 
+            const input = document.getElementById('msg-in'); if(!input.value) return;
+            const chat = document.getElementById('chat');
+            const msgHtml = `<div class="text-right"><p class="text-[7px] font-mono text-[#00ffcc]">YOU</p><p class="text-sm opacity-80 mt-1 italic">${input.value}</p></div>`;
+            state.chatHistory += msgHtml;
+            chat.innerHTML += msgHtml;
+            chat.scrollTop = chat.scrollHeight;
+            input.value = '';
+        }
+        window.onload = () => {};
     </script>
 </body>
 </html>
