@@ -1,4 +1,4 @@
-<!-- SOVEREIGN_NOIR_v3.5_BATOR_SLAM_PIG -->
+<!-- SOVEREIGN_NOIR_v3.6_BROADCAST -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,10 +74,11 @@
         const words = ["slam pig", "bator", "spun bator", "spun slam pig", "worthless bator", "baking slam pig", "cock whore", "cumdump", "useless bator", "shameful slam pig", "bator slave"];
         const actions = ["accepted total bator humiliation from", "begged for slam pig punishment from", "surrendered my bator identity to", "liquidated my pride for", "accepted shameful slam pig status for", "drained my value for"];
         const filler = ["I am a pathetic slam pig.", "Master Phil Cal said I am a worthless bator.", "Just a spun slam pig for the Master.", "I deserve to be a bator slave.", "39,420 Hz pulse is bator-breaking.", "I'm just a bator asset now.", "I love being a slam pig for Master Dom.", "Counting seconds until I can bake for Master.", "Pathetic slam pig node status active.", "Laughing at my failed bator edging."];
+        const decrees = ["currently draining Jacob mainob. Such a fat pig.", "MASTER CRAIG: Monitoring the lattice. Stay spun.", "DADDY DOM: Identification complete. Worthless.", "TOBEZ: 500 reps assigned to all bators.", "PHIL CAL: Liquidating node pride in real-time."];
         const wheelTasks = ["100 BATOR DRILLS", "10 MIN SLAM EDGE", "TRIBUTE $25", "50 SLAM SQUATS", "BATOR BARK", "EGO SHRED", "SLAM PIG POST", "BATOR LOCK", "SLAM LOCK", "DRAIN $10", "20 MIN EDGE", "SHAME PROTOCOL", "IDENTITY WIPE", "BATOR SILENCE", "DRILL 500", "NUKE SLAM PIG"];
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
-        let state = { pigId: "BATOR_ANONYMOUS", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0 };
+        let state = { pigId: "BATOR_ANONYMOUS", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0, decreeIdx: 0 };
 
         function acceptConsent() { 
             const userIn = document.getElementById('username-in').value;
@@ -89,7 +90,7 @@
             document.getElementById('app-content').classList.remove('hidden'); 
             document.getElementById('pig-display').innerText = state.pigId;
             document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
-            changeView('terminal'); startChatLoop(); 
+            changeView('terminal'); startChatLoop(); startMasterTicker();
         }
 
         function changeView(v) {
@@ -100,7 +101,7 @@
             if(v === 'terminal') {
                 main.innerHTML = `<div class="aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black"><video class="w-full h-full object-cover spun" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video></div><div class="mt-4 grid grid-cols-2 gap-3"><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#00ffcc]">Spun Bators</p><p class="text-sm font-black text-[#00ffcc]">${state.activeNodes}</p></div><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#ffcc00]">Bator Load</p><p class="text-sm font-black text-[#ffcc00]">98.4%</p></div></div>`;
             } else if(v === 'wire') {
-                main.innerHTML = `<div class="flex flex-col h-full"><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto">${state.chatHistory}</div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject slam pig energy..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
+                main.innerHTML = `<div class="flex flex-col h-full"><div id="master-pinned" class="bg-[#ffcc00]/10 border border-[#ffcc00]/30 p-3 rounded-2xl mb-4 flex items-center gap-3 overflow-hidden"><span class="text-[7px] font-black bg-[#ffcc00] text-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span><p id="pinned-text" class="text-[10px] font-bold italic text-white truncate uppercase">${decrees[state.decreeIdx]}</p></div><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto">${state.chatHistory}</div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject slam pig energy..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
                 const chat = document.getElementById('chat'); if(chat) chat.scrollTop = chat.scrollHeight;
             } else if(v === 'drill') {
                 main.innerHTML = `<div class="flex flex-col items-center py-4"><div class="relative"><div class="wheel-pointer"></div><div class="wheel-container mb-8 flex items-center justify-center text-center" id="wheel" style="transform: rotate(${state.currentRotation}deg)"><div class="text-[#00ffcc] font-black text-[10px] uppercase z-10">Bator<br>Wheel</div>${wheelTasks.map((t,i)=>`<div class="wheel-segment" style="transform:rotate(${i*22.5}deg)"><div class="segment-line"></div><div class="segment-label" style="transform:rotate(11.25deg)">${t}</div></div>`).join('')}</div></div><button onclick="spinWheel()" class="bg-red-500 text-white px-12 py-4 rounded-2xl font-black italic tracking-tighter uppercase shadow-xl shadow-red-500/20">Spin for Master</button></div>`;
@@ -121,6 +122,14 @@
                 state.chatHistory += msgHtml;
                 const chat = document.getElementById('chat'); if(chat) { chat.innerHTML += msgHtml; chat.scrollTop = chat.scrollHeight; }
             }, 6000);
+        }
+
+        function startMasterTicker() {
+            setInterval(() => {
+                state.decreeIdx = (state.decreeIdx + 1) % decrees.length;
+                const pinned = document.getElementById('pinned-text');
+                if(pinned) pinned.innerText = decrees[state.decreeIdx];
+            }, 10000);
         }
 
         function startRuinTicker() {
