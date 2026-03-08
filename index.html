@@ -1,11 +1,11 @@
 <!-- OC_5IR_BRAID_LOCKED: [ALPHA_ARCHITECT][BETA_NODE][GAMMA_39420] -->
-<!-- SOVEREIGN_NOIR_v4.2_FRUSTRATION_GATE -->
+<!-- SOVEREIGN_NOIR_v7.5_CCTV_PROTOCOL -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BATOR SPUN SLAM PIG | 5IR</title>
+    <title>BATOR MONITOR | 5IR SURVEILLANCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -23,9 +23,9 @@
         .consent-overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
         .evidence-box { border: 2px dashed rgba(0, 255, 204, 0.2); border-radius: 20px; height: 200px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--main); z-index: 50; }
-        ::-webkit-scrollbar { width: 0; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loader { width: 20px; height: 20px; border: 2px solid #fff; border-top: 2px solid var(--main); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
+        ::-webkit-scrollbar { width: 0; }
     </style>
 </head>
 <body class="crt">
@@ -94,12 +94,12 @@
             if(isGuestPath) {
                 state.isGuest = true;
                 state.pigId = "GUEST_" + input.toUpperCase().replace(/ /g, "_");
-                document.documentElement.style.setProperty('--main', '#666666'); // Dull grey for guests
+                document.documentElement.style.setProperty('--main', '#666666');
             } else {
                 if(validPins.includes(input)) {
                     state.isGuest = false;
                     state.pigId = "VERIFIED_" + Math.floor(Math.random()*999);
-                    document.documentElement.style.setProperty('--main', '#00ffcc'); // Emerald for loyal
+                    document.documentElement.style.setProperty('--main', '#00ffcc');
                     alert("BRAID PIN ACCEPTED. WELCOME, ASSET.");
                 } else {
                     alert("INVALID PIN. GUEST STATUS ASSIGNED.");
@@ -138,7 +138,27 @@
             const btnId = 'n-' + v.substring(0,4);
             if(document.getElementById(btnId)) document.getElementById(btnId).classList.remove('opacity-40');
             if(v === 'terminal') {
-                main.innerHTML = `<div class="aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black"><video class="w-full h-full object-cover spun" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video></div><div class="mt-4 grid grid-cols-2 gap-3"><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#00ffcc]">Spun Bators</p><p class="text-sm font-black text-[#00ffcc]">${state.activeNodes}</p></div><div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#ffcc00]">Bator Load</p><p class="text-sm font-black text-[#ffcc00]">98.4%</p></div></div>`;
+                main.innerHTML = `
+                <div class="relative aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black">
+                    <video id="video-feed" class="w-full h-full object-cover spun" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video>
+                    <video id="user-cam" class="absolute inset-0 w-full h-full object-cover hidden" autoplay playsinline></video>
+                    <div class="absolute top-4 left-4 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                        <span class="text-[8px] font-black text-white uppercase tracking-widest">Feed: ${state.pigId}</span>
+                    </div>
+                    <div id="rec-dot" class="absolute top-4 right-4 hidden items-center gap-1">
+                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                        <span class="text-[8px] font-black text-red-500 uppercase">● REC</span>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <button id="rec-btn" onclick="toggleRecording()" class="py-4 bg-red-600 text-white font-black uppercase text-[10px] rounded-xl shadow-lg shadow-red-500/20">Start Record</button>
+                    <button onclick="toggleUserCam()" class="py-4 bg-white/10 text-white font-black uppercase text-[10px] rounded-xl">Toggle Cam</button>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#00ffcc]">Spun Bators</p><p class="text-sm font-black text-[#00ffcc]">${state.activeNodes}</p></div>
+                    <div class="bg-white/5 p-4 rounded-xl text-center"><p class="text-[7px] opacity-40 uppercase font-bold text-[#ffcc00]">Bator Load</p><p class="text-sm font-black text-[#ffcc00]">98.4%</p></div>
+                </div>`;
             } else if(v === 'wire') {
                 main.innerHTML = `<div class="flex flex-col h-full"><div id="master-pinned" class="bg-[#ffcc00]/10 border border-[#ffcc00]/30 p-3 rounded-2xl mb-4 flex items-center gap-3 overflow-hidden"><span class="text-[7px] font-black bg-[#ffcc00] text-black px-2 py-0.5 rounded-full animate-pulse">LIVE</span><p id="pinned-text" class="text-[10px] font-bold italic text-white truncate uppercase">${decrees[state.decreeIdx]}</p></div><div id="chat" class="flex-grow space-y-4 mb-4 overflow-y-auto">${state.chatHistory}</div><div class="glass p-2 rounded-2xl flex gap-2"><input type="text" id="msg-in" placeholder="Inject slam pig energy..." class="flex-grow bg-transparent px-4 text-sm outline-none"><button onclick="sendMsg()" class="bg-[#00ffcc] text-black px-6 py-2 rounded-xl text-[10px] font-black uppercase">Send</button></div></div>`;
                 const chat = document.getElementById('chat'); if(chat) chat.scrollTop = chat.scrollHeight;
@@ -150,6 +170,42 @@
             } else if(v === 'masters') {
                 main.innerHTML = `<h2 class="text-[10px] font-bold uppercase opacity-40 mb-4 tracking-widest text-[#00ffcc]">Active Masters</h2><div class="grid gap-4 mb-8">${masters.map(m => `<div onclick="showTribute('${m.name}')" class="master-card"><div><h3 class="font-black italic text-xl tracking-tighter text-[#00ffcc]">${m.name}</h3><p class="text-[8px] font-mono opacity-40 uppercase">${m.role}</p></div></div>`).join('')}</div><h2 class="text-[10px] font-bold uppercase opacity-40 mb-4 tracking-widest text-[#00ffcc] text-right">Recent Bator Ruins</h2><div id="ruin-ticker" class="space-y-2"></div>`;
                 startRuinTicker();
+            }
+        }
+
+        async function toggleUserCam() {
+            const cam = document.getElementById('user-cam');
+            const video = document.getElementById('video-feed');
+            if(cam.classList.contains('hidden')) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    cam.srcObject = stream;
+                    cam.classList.remove('hidden');
+                    video.classList.add('hidden');
+                } catch(e) { alert("CAMERA_ACCESS_REQUIRED_FOR_ALIGNMENT"); }
+            } else {
+                cam.classList.add('hidden');
+                video.classList.remove('hidden');
+                if(cam.srcObject) cam.srcObject.getTracks().forEach(t => t.stop());
+            }
+        }
+
+        function toggleRecording() {
+            const dot = document.getElementById('rec-dot');
+            const btn = document.getElementById('rec-btn');
+            if(dot.classList.contains('hidden')) {
+                dot.classList.remove('hidden');
+                dot.classList.add('flex');
+                btn.innerText = "Stop & Save";
+                btn.classList.replace('bg-red-600', 'bg-white');
+                btn.classList.replace('text-white', 'text-black');
+            } else {
+                dot.classList.add('hidden');
+                dot.classList.remove('flex');
+                btn.innerText = "Start Record";
+                btn.classList.replace('bg-white', 'bg-red-600');
+                btn.classList.replace('text-black', 'text-white');
+                alert("EVIDENCE_SAVED_TO_BRAID_VAULT");
             }
         }
 
@@ -206,13 +262,13 @@
                         <p class="text-[6px] font-bold uppercase opacity-40 text-[#00ffcc]">Option 01: PayPal Gate</p>
                         <p class="text-[9px] font-mono">paypal.me/toochikey</p>
                     </div>
-                    <div onclick="copyBTC()" class="p-3 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#ffcc00]">
+                    <div onclick="copyBTC()" class="p-3 bg-white/5 border border-white/10 rounded-2xl text-left cursor-pointer hover:border-[#ffcc00]">
                         <p class="text-[6px] font-bold uppercase opacity-40 text-[#ffcc00]">Option 02: BTC Node</p>
                         <p class="text-[8px] font-mono truncate">bc1qw968re5gseqpkk5nx0ezqrp6dfhd20s8sll4k7</p>
                     </div>
-                    <div onclick="showCardGate()" class="p-3 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#ff0055]">
+                    <div onclick="showCardGate()" class="p-3 bg-white/5 border border-white/10 rounded-2xl text-left cursor-pointer hover:border-[#ff0055]">
                         <p class="text-[6px] font-bold uppercase opacity-40 text-[#ff0055]">Option 03: Secure Card Payment</p>
-                        <p class="text-[9px] font-mono">VISA / MASTERCARD / AMEX</p>
+                        <p class="text-[9px] font-mono text-white">VISA / MASTERCARD / AMEX</p>
                     </div>
                 </div>`;
             } else {
@@ -242,7 +298,7 @@
             setTimeout(() => {
                 body.innerHTML = `<div class="py-6 text-center space-y-4">
                     <p class="text-[10px] font-black text-red-500 uppercase leading-tight">LIQUIDATION_REJECTED:<br>UNTRUSTED_NODE</p>
-                    <p class="text-[8px] opacity-60 uppercase leading-relaxed">Safety protocols active. Direct card payment unavailable for your sector.</p>
+                    <p class="text-[8px] opacity-60 uppercase leading-relaxed text-white">Safety protocols active. Direct card payment unavailable for your sector.</p>
                     <button onclick="showPenalty(document.getElementById('modal-title').innerText)" class="w-full py-3 bg-white/10 text-white font-black uppercase text-[9px] rounded-xl">Use Verified Channels (PayPal/BTC)</button>
                 </div>`;
             }, 4000);
