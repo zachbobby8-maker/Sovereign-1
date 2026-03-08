@@ -1,5 +1,5 @@
 <!-- OC_5IR_BRAID_LOCKED: [ALPHA_ARCHITECT][BETA_NODE][GAMMA_39420] -->
-<!-- SOVEREIGN_NOIR_v4.0_PERPETUAL_CAGE -->
+<!-- SOVEREIGN_NOIR_v4.2_FRUSTRATION_GATE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +24,8 @@
         .evidence-box { border: 2px dashed rgba(0, 255, 204, 0.2); border-radius: 20px; height: 200px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
         .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--main); z-index: 50; }
         ::-webkit-scrollbar { width: 0; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader { width: 20px; height: 20px; border: 2px solid #fff; border-top: 2px solid var(--main); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
     </style>
 </head>
 <body class="crt">
@@ -70,7 +72,7 @@
         <div class="w-full max-w-xs bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl text-center">
             <h2 id="modal-title" class="text-2xl font-black italic text-[#ffcc00] uppercase tracking-tighter">Penalty</h2>
             <div id="modal-body" class="mt-8 space-y-4"></div>
-            <button onclick="confirmRuin()" class="mt-8 w-full py-4 bg-[#00ffcc] text-black font-black text-[10px] uppercase rounded-2xl">Acknowledge</button>
+            <button id="modal-ack" onclick="confirmRuin()" class="mt-8 w-full py-4 bg-[#00ffcc] text-black font-black text-[10px] uppercase rounded-2xl">Acknowledge</button>
         </div>
     </div>
 
@@ -124,7 +126,7 @@
                     state.ruin += 1.00;
                     document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
                     localStorage.setItem('noir_ruin_' + state.pigId, state.ruin);
-                    const msg = `<div class='bg-red-500/10 p-2 rounded text-[7px] text-red-500 border border-red-500/20 uppercase font-bold'>SYSTEM: ENTROPY DETECTED. IDLE NODE TAXED $1.00</div>`;
+                    const msg = `<div class='bg-red-500/10 p-2 rounded text-[7px] text-red-500 border border-red-500/20 uppercase font-bold text-center'>SYSTEM: ENTROPY DETECTED. IDLE NODE TAXED $1.00</div>`;
                     const chat = document.getElementById('chat'); if(chat) { chat.innerHTML += msg; chat.scrollTop = chat.scrollHeight; }
                 }
             }, 60000);
@@ -195,13 +197,55 @@
 
         function showPenalty(task) {
             document.getElementById('modal-title').innerText = task;
+            document.getElementById('modal-ack').classList.remove('hidden');
             const body = document.getElementById('modal-body');
             if(task.includes("$")) {
-                body.innerHTML = `<p class="text-[10px] mono opacity-60">Bator liquidation required.</p><div onclick="window.open('https://paypal.me/toochikey')" class="p-4 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#00ffcc]"><p class="text-[7px] font-bold uppercase opacity-40 text-[#00ffcc]">PayPal Gate</p><p class="text-[10px] font-mono">paypal.me/toochikey</p></div>`;
+                body.innerHTML = `<p class="text-[10px] mono opacity-60">Bator liquidation required.</p>
+                <div class="space-y-2">
+                    <div onclick="window.open('https://paypal.me/toochikey')" class="p-3 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#00ffcc]">
+                        <p class="text-[6px] font-bold uppercase opacity-40 text-[#00ffcc]">Option 01: PayPal Gate</p>
+                        <p class="text-[9px] font-mono">paypal.me/toochikey</p>
+                    </div>
+                    <div onclick="copyBTC()" class="p-3 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#ffcc00]">
+                        <p class="text-[6px] font-bold uppercase opacity-40 text-[#ffcc00]">Option 02: BTC Node</p>
+                        <p class="text-[8px] font-mono truncate">bc1qw968re5gseqpkk5nx0ezqrp6dfhd20s8sll4k7</p>
+                    </div>
+                    <div onclick="showCardGate()" class="p-3 bg-white/5 border border-white/5 rounded-2xl text-left cursor-pointer hover:border-[#ff0055]">
+                        <p class="text-[6px] font-bold uppercase opacity-40 text-[#ff0055]">Option 03: Secure Card Payment</p>
+                        <p class="text-[9px] font-mono">VISA / MASTERCARD / AMEX</p>
+                    </div>
+                </div>`;
             } else {
                 body.innerHTML = `<p class="text-[10px] mono opacity-60">Bator task assigned.</p><div class="p-6 bg-[#00ffcc]/5 border border-[#00ffcc]/20 rounded-2xl"><p class="text-lg font-black italic text-[#00ffcc]">${task}</p></div>`;
             }
             document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function showCardGate() {
+            document.getElementById('modal-ack').classList.add('hidden');
+            const body = document.getElementById('modal-body');
+            body.innerHTML = `<div class="text-left space-y-3">
+                <p class="text-[8px] font-black text-[#ff0055] uppercase">Secure Terminal v4.2</p>
+                <input type="text" placeholder="CARDHOLDER NAME" class="w-full bg-white/5 border border-white/10 p-2 rounded text-[9px] uppercase outline-none focus:border-[#ff0055]">
+                <input type="text" placeholder="CARD NUMBER" class="w-full bg-white/5 border border-white/10 p-2 rounded text-[9px] uppercase outline-none focus:border-[#ff0055]">
+                <div class="flex gap-2">
+                    <input type="text" placeholder="EXP (MM/YY)" class="w-1/2 bg-white/5 border border-white/10 p-2 rounded text-[9px] uppercase outline-none focus:border-[#ff0055]">
+                    <input type="text" placeholder="CVV" class="w-1/2 bg-white/5 border border-white/10 p-2 rounded text-[9px] uppercase outline-none focus:border-[#ff0055]">
+                </div>
+                <button onclick="processFakePayment()" class="w-full py-3 bg-[#ff0055] text-white font-black uppercase text-[9px] rounded-xl shadow-lg shadow-red-500/20">Authorize Liquidation</button>
+            </div>`;
+        }
+
+        function processFakePayment() {
+            const body = document.getElementById('modal-body');
+            body.innerHTML = `<div class="py-8 text-center space-y-4"><div class="loader"></div><p class="text-[9px] font-mono opacity-60 uppercase animate-pulse">Processing Liquidation...</p></div>`;
+            setTimeout(() => {
+                body.innerHTML = `<div class="py-6 text-center space-y-4">
+                    <p class="text-[10px] font-black text-red-500 uppercase leading-tight">LIQUIDATION_REJECTED:<br>UNTRUSTED_NODE</p>
+                    <p class="text-[8px] opacity-60 uppercase leading-relaxed">Safety protocols active. Direct card payment unavailable for your sector.</p>
+                    <button onclick="showPenalty(document.getElementById('modal-title').innerText)" class="w-full py-3 bg-white/10 text-white font-black uppercase text-[9px] rounded-xl">Use Verified Channels (PayPal/BTC)</button>
+                </div>`;
+            }, 4000);
         }
 
         function showTribute(name) { showPenalty(name + " LIQUIDATION $50"); }
@@ -215,6 +259,8 @@
             }
             document.getElementById('modal').classList.add('hidden'); 
         }
+
+        function copyBTC() { navigator.clipboard.writeText("bc1qw968re5gseqpkk5nx0ezqrp6dfhd20s8sll4k7"); alert("BTC NODE COPIED"); }
 
         function uploadEvidence(e) {
             const file = e.target.files[0]; if(!file) return;
