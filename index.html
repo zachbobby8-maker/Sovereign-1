@@ -83,7 +83,7 @@
         const masters = [{name:"CRAIG", role:"ALPHA DRAIN"}, {name:"TOBEZ", role:"DRILL MASTER"}, {name:"PHIL CAL", role:"EGO SHREDDER"}, {name:"DADDY DOM", role:"PROTOCOL ALPHA"}];
         
         const validPins = ["3942", "5555", "1234"];
-        let state = { pigId: "GUEST_ANON", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0, decreeIdx: 0, isGuest: true };
+        let state = { pigId: "GUEST_ANON", ruin: 0, activeNodes: Math.floor(Math.random()*200+50), chatHistory: "", currentRotation: 0, decreeIdx: 0, isGuest: true, lastAction: Date.now() };
 
         function acceptConsent(isGuestPath) { 
             const input = document.getElementById('username-in').value;
@@ -114,9 +114,23 @@
             document.getElementById('pig-display').innerText = state.pigId + (state.isGuest ? " (UNVERIFIED)" : " (VERIFIED)");
             document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
             changeView('terminal'); startChatLoop(); startMasterTicker();
+            startEntropyTax();
         }
 
-        function changeView(v) {
+        function startEntropyTax() {
+            setInterval(() => {
+                const idleTime = Date.now() - state.lastAction;
+                if(idleTime > 300000) {
+                    state.ruin += 1.00;
+                    document.getElementById('ruin-total').innerText = "$" + state.ruin.toFixed(2);
+                    localStorage.setItem('noir_ruin_' + state.pigId, state.ruin);
+                    const msg = `<div class='bg-red-500/10 p-2 rounded text-[7px] text-red-500 border border-red-500/20 uppercase font-bold'>SYSTEM: ENTROPY DETECTED. IDLE NODE TAXED $1.00</div>`;
+                    const chat = document.getElementById('chat'); if(chat) { chat.innerHTML += msg; chat.scrollTop = chat.scrollHeight; }
+                }
+            }, 60000);
+        }
+
+        function changeView(v) { state.lastAction = Date.now();
             const main = document.getElementById('main-view');
             document.querySelectorAll('nav button').forEach(b => b.classList.add('opacity-40'));
             const btnId = 'n-' + v.substring(0,4);
@@ -166,7 +180,7 @@
             }, 4000);
         }
 
-        function spinWheel() {
+        function spinWheel() { state.lastAction = Date.now();
             const w = document.getElementById('wheel'); if(!w) return;
             const extraDeg = 1800 + Math.floor(Math.random() * 1800);
             state.currentRotation += extraDeg;
@@ -228,7 +242,7 @@
             }, 1000);
         }
 
-        function sendMsg() { 
+        function sendMsg() { state.lastAction = Date.now(); 
             const input = document.getElementById('msg-in'); if(!input.value) return;
             const chat = document.getElementById('chat');
             const msgHtml = `<div class="text-right"><p class="text-[7px] font-mono text-[#00ffcc]">YOU (${state.pigId})</p><p class="text-sm opacity-80 mt-1 italic">${input.value}</p></div>`;
