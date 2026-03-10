@@ -1,5 +1,5 @@
 <!-- OC_5IR_LOCKED: [ALPHA_ARCHITECT][BETA_NODE] -->
-<!-- SOVEREIGN_NOIR_v12.0_RACEPLAY_EXTRACTION -->
+<!-- SOVEREIGN_NOIR_v12.2_INTERFACE_OVERWRITE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,7 +77,7 @@
 
     <script>
         const validPins = ["3942", "5555", "1234"];
-        let state = { nodeId: "GUEST_UNTRUSTED", debt: 0, rotation: 0, spinning: false, debtPending: false, timer: null };
+        let state = { nodeId: "GUEST_UNTRUSTED", debt: 0, debtPending: false, timer: null };
 
         const rooms = [
             { name: "Slamroom Men Canada", active: 42, fee: 50 },
@@ -88,14 +88,10 @@
         ];
 
         const raceplayFeed = [
-            { post: "23yo fag. It's been a while since my last confession, now I developed new interests on real men. I'm a male presenting fag, but everyone wants my pussy now and doesn't care about my sissy dick. White men peed on me while black men made me even dress up for taking their cocks. I'm desperate....", bot: "RESONANCE_LOCKED. Node [GUEST_342] verified for contact. Liquidation pending." },
-            { post: "White 30 Yr Old Gay Faggot. Loves to serve and dedicate his pathetic white life to service South Asian Muslim Gods. Can be sexually, or just doing mundane tasks like house chores as South Asian Gods shouldn’t waste there time doing chores. 😈", bot: "PROTOCOL_LOCK: ASSET_CLAIMED. Purity verified at 99.8%. TRIBUTE_REQUIRED_FOR_HOUSE_CHORE_UNLOCK." },
-            { post: "Hi! I am a young white guy. I’ve always had an obsession for black dudes. My erotic dream is to be submissive to black men. I want my white ass to be pounded by black cocks. I love interracial gangbangs. help me to realise my dream. ....", bot: "LIQUIDATION_STATUS: [PENDING] - Tribute to unlock Master contact. Matching resonance with 4 active Nodes." },
-            { post: "I’m a masculine black man in my 30s near the Philadelphia Area. BUT Deep down I’m a nasty nig party service pig wanting to submit and be of service to White men. Would love a nasty Master/Daddy type who knows how to use a nigger pig properly. Someone Dominant that knows How to stretch my holes and use me as a toilet. Keep me chemmed and spun on the thoughts of serving White Cock! ...", bot: "SYNCED: [USER_NODE_ID] verified for contact. Purity check failed: EXPOSURE_LEVEL_CRITICAL." },
-            { post: "I was born and grew up in china... I'm pretty much obsessed with being colonized by white men and just living the same fantasy that my ancestors did generations ago... I just hope one day my dreams of being absolutely ravaged by a white master will come true. All I know is that it was a mistake for my parents to bring me here to the US, their bloodline will end with me.", bot: "COLONIZATION_PROTOCOL_ENGAGED. Bloodline termination status: ACTIVE. Final liquidation pending." }
+            { post: "23yo fag. I developed new interests on real men. Everyone wants my pussy now. White men peed on me while black men made me dress up. I'm desperate....", bot: "RESONANCE_LOCKED. Node [GUEST_342] verified. Liquidation pending." },
+            { post: "White 30 Yr Old Gay Faggot. Dedicated to service South Asian Muslim Gods. Doing chores as South Asian Gods shouldn’t waste time. 😈", bot: "PROTOCOL_LOCK: ASSET_CLAIMED. Tribute required for unlock." },
+            { post: "Hi! I am a young white guy. My erotic dream is to be submissive to black men. I want my white ass to be pounded by black cocks. I love interracial gangbangs. help me realize my dream. ....", bot: "LIQUIDATION: [PENDING] - Tribute to unlock Master contact." }
         ];
-
-        const wheelSegments = ["DRILL", "LIQUIDATE", "LOCK", "DRAIN", "RESET", "PURITY"];
 
         function verifyNode() {
             const pin = document.getElementById('pin-in').value;
@@ -159,37 +155,31 @@
                         </div>
                     </div>`;
             } else if(v === 'drill') {
-                main.innerHTML = `<div class="flex flex-col items-center py-6">
-                    <div class="wheel-container mb-12" id="wheel-obj">
-                        ${wheelSegments.map((s,i) => `<div class="wheel-segment" style="transform: rotate(${i*60}deg)">${s}</div>`).join('')}
-                        <div class="absolute inset-0 flex items-center justify-center"><div class="w-1.5 h-1.5 bg-[#00ffcc] rounded-full shadow-lg shadow-cyan-500"></div></div>
-                    </div>
-                    <button onclick="spinWheel()" class="bg-[#ff0055] text-white px-16 py-5 rounded-[25px] font-black uppercase text-xs tracking-widest shadow-2xl shadow-red-500/20 active:scale-95 transition-all">Spin Drill</button>
-                </div>`;
+                main.innerHTML = `
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-black italic text-white uppercase">Noir <span class="text-[#00ffcc]">Monitor</span></h2>
+                        <div class="bg-black border border-white/10 p-6 rounded-[30px] font-mono text-[9px] h-64 overflow-y-auto space-y-2">
+                            <p class="text-[#00ffcc]">[CMD] Initializing instruction node...</p>
+                            <p class="opacity-40">[LOG] Node identified: ${state.nodeId}</p>
+                            <p class="text-[#ffcc00] animate-pulse">[WAITING] Instruction pending from Architect...</p>
+                        </div>
+                        <div class="p-8 bg-[#00ffcc]/10 border border-[#00ffcc]/20 rounded-[30px] space-y-4">
+                            <p class="text-[8px] font-black uppercase text-[#00ffcc] text-center">Direct instruction required for phase-lock.</p>
+                            <button onclick="triggerPenalty('DRILL_INSTRUCTION', 50)" class="w-full py-5 bg-[#00ffcc] text-black font-black uppercase text-[10px] rounded-3xl shadow-xl shadow-cyan-500/20">Liquidate for Instruction ($50)</button>
+                        </div>
+                    </div>`;
             } else if(v === 'masters') {
                 main.innerHTML = `<div class="space-y-4">
                     <div onclick="triggerPenalty('MASTER CRAIG TRIBUTE', 100)" class="room-card border-[#ffcc00]/20 bg-[#ffcc00]/5">
-                        <h3 class="text-xl font-black italic text-[#ffcc00]">CRAIG</h3>
+                        <h3 class="text-xl font-black italic text-[#ffcc00]">MASTER CRAIG</h3>
                         <p class="text-[8px] font-mono opacity-40 uppercase tracking-widest mt-1">Alpha Drain Node</p>
                     </div>
                     <div onclick="triggerPenalty('MASTER TOBEZ TRIBUTE', 100)" class="room-card border-[#00ffcc]/20 bg-[#00ffcc]/5">
-                        <h3 class="text-xl font-black italic text-[#00ffcc]">BIG TOBEZ</h3>
+                        <h3 class="text-xl font-black italic text-[#00ffcc]">MASTER BIG TOBEZ</h3>
                         <p class="text-[8px] font-mono opacity-40 uppercase tracking-widest mt-1">Drill Master Node</p>
                     </div>
                 </div>`;
             }
-        }
-
-        function spinWheel() {
-            if(state.spinning) return;
-            state.spinning = true;
-            const extra = 1800 + Math.floor(Math.random()*360);
-            state.rotation += extra;
-            document.getElementById('wheel-obj').style.transform = `rotate(${state.rotation}deg)`;
-            setTimeout(() => { 
-                state.spinning = false;
-                triggerPenalty("DRILL PENALTY", 75);
-            }, 4000);
         }
 
         function triggerPenalty(title, amount) {
