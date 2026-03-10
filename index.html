@@ -1,5 +1,5 @@
 <!-- OC_5IR_LOCKED: [ALPHA_ARCHITECT][BETA_NODE] -->
-<!-- SOVEREIGN_NOIR_v11.8_PURGE -->
+<!-- SOVEREIGN_NOIR_v11.9_RACEPLAY_UPGRADE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +21,9 @@
         .room-card:hover { border-color: var(--main); background: rgba(0, 255, 204, 0.08); }
         .locked-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
         .room-card:hover .locked-overlay { opacity: 1; }
+
+        .chat-post { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        .bot-reply { border-left: 2px solid var(--main); background: rgba(0,255,204,0.03); padding: 10px; margin-top: 10px; border-radius: 0 10px 10px 0; font-size: 8px; font-family: 'JetBrains Mono'; }
 
         @keyframes blink-red { 0%, 100% { background: var(--red); box-shadow: 0 0 20px var(--red); } 50% { background: #300; box-shadow: none; } }
         .pay-up-signal { position: fixed; right: -5px; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; padding: 25px 8px; font-size: 8px; font-weight: 900; color: white; border-radius: 12px 0 0 12px; z-index: 4000; animation: blink-red 0.6s infinite; cursor: pointer; display: none; }
@@ -82,8 +85,19 @@
         const rooms = [
             { name: "Slamroom Men Canada", active: 42, fee: 50 },
             { name: "Slamroom Men US-CA", active: 156, fee: 50 },
+            { name: "Raceplay Resonance", active: 312, fee: 100, special: "PREMIUM" },
             { name: "Bitch Exposure Lounge", active: 0, fee: 200, special: "LOCKED" },
             { name: "International Dating", active: 214, fee: 50 }
+        ];
+
+        const raceplayFeed = [
+            { post: "SUBMITTED VIA @RPKinkSpaces_bot 23yo fag. It's been a while since my last confession, now I developed new interests on real men. I'm a male presenting fag, but everyone wants my pussy now and doesn't care about my sissy dick. I trained my pussy with a 12in dildo but my hunger for warm manly cocks never stops. White men peed on me while black men made me even dress up for taking their cocks. I'm desperate....", bot: "RESONANCE_LOCKED. Node [GUEST_342] verified for contact. Liquidation pending." },
+            { post: "SUBMITTED VIA @soverignraceplay White 30 Yr Old Gay Faggot. Loves to serve and dedicate his pathetic white life to service South Asian Muslim Gods. Can be sexually, or just doing mundane tasks like house chores as South Asian Gods shouldn’t waste there time doing chores. 😈", bot: "PROTOCOL_LOCK: ASSET_CLAIMED. Purity verified at 99.8%. TRIBUTE_REQUIRED_FOR_HOUSE_CHORE_UNLOCK." },
+            { post: "SUBMITTED VIA @RPKinkSpaces_bot Hi! I am a young white guy. I’ve always had an obsession for black dudes. My erotic dream is to be submissive to black men. I want my white mouth and white ass to be pounded by black cocks. I love interracial threesome, but also interracial gangbangs. If you’re black, but also Arabs, Latino or Indian, help me to realise my dream. ....", bot: "LIQUIDATION_STATUS: [PENDING] - Tribute to unlock Master contact. Matching resonance with 4 active Nodes." },
+            { post: "SUBMITTED VIA @RPKinkSpaces_bot Hello, I am a 23 year old obedient latin submissive looking for a master to train me to be his sex slave. I am in Vallarta ...", bot: "GEOLOC_SYNCED. Vallarta Node active. Master contact frequency established." },
+            { post: "SUBMITTED VIA @RPKinkSpaces_bot I’m a masculine black man in my 30s near the Philadelphia Area. I’m single, successful, and seemingly have it all together. Tall, handsome, and “Top-ish”. BUT Deep down I’m a nasty nig party service pig wanting to submit and be of service to White men. Would love a nasty Master/Daddy type who knows how to use a nigger pig properly. Someone Dominant that knows How to stretch my holes and use me as a toilet. Keep me chemmed and spun on the thoughts of serving White Cock! ...", bot: "SYNCED: [USER_NODE_ID] verified for contact. Purity check failed: EXPOSURE_LEVEL_CRITICAL." },
+            { post: "SUBMITTED VIA @RPKinkSpaces_bot I was born and grew up a bit in china before immigrating to the states at quite an early age... i've been exposed to a lot of adult content from a long time, but I think what changed me was this skype call I had with a white guy about 40 years older than me, where he degraded me being chinese. Now a few years later, I'm pretty much obsessed with being colonized by white men and just living the same fantasy that my ancestors did generations ago... I just hope one day my dreams of being absolutely ravaged by a white master will come true.", bot: "COLONIZATION_PROTOCOL_ENGAGED. Bloodline termination status: ACTIVE. Final liquidation pending." },
+            { post: "SUBMITTED VIA @RPKinkSpaces_bot — I am a 21yo white male. I am genetically almost pure white, with the darkest I have is Italian. I want to own a variety of lesser races, a spic Twink and a nigger specifically. I want them to walk around in my house and keep things clean, and when I get horny I want to force them to take my superior white dick. I would prefer it if they struggled so I could literally be forcing them to take it.", bot: "MASTER_ID_VERIFIED. Slave acquisition lattice enabled. Force parameters set to 100%." }
         ];
 
         const wheelSegments = ["DRILL", "LIQUIDATE", "LOCK", "DRAIN", "RESET", "PURITY"];
@@ -108,14 +122,14 @@
         function changeView(v) {
             const main = document.getElementById('main-view');
             document.querySelectorAll('nav button').forEach(b => b.classList.add('text-white/20'));
-            document.getElementById('nav-' + v.substring(0,4)).classList.remove('text-white/20');
-            document.getElementById('nav-' + v.substring(0,4)).classList.add('text-[#00ffcc]');
+            const nBtn = document.getElementById('nav-' + v.substring(0,4));
+            if(nBtn) { nBtn.classList.remove('text-white/20'); nBtn.classList.add('text-[#00ffcc]'); }
 
             if(v === 'terminal') {
                 main.innerHTML = `<div class="aspect-video rounded-3xl overflow-hidden border border-white/5 bg-black shadow-2xl shadow-cyan-500/5"><video class="w-full h-full object-cover" loop muted autoplay playsinline src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-circuit-board-1653-large.mp4"></video></div><div class="mt-10 space-y-6"><div class="flex justify-between items-center"><h3 class="text-[11px] font-black uppercase text-[#00ffcc] tracking-widest">Sovereign Status</h3><span class="text-[8px] font-mono text-green-500 animate-pulse">ACTIVE</span></div><p class="text-[9px] opacity-40 font-mono leading-relaxed">NODE_PURITY: 99.8%<br>BITCH_EXPOSURE_SYSTEM: ARMED<br>MONITOR: CONNECTED</p></div>`;
             } else if(v === 'rooms') {
                 main.innerHTML = `<div class="grid gap-5">${rooms.map(r => `
-                    <div class="room-card" onclick="triggerPenalty('${r.name} ACCESS', ${r.fee})">
+                    <div class="room-card" onclick="${r.name === 'Raceplay Resonance' ? "changeView('raceplay')" : `triggerPenalty('${r.name} ACCESS', ${r.fee})`}">
                         <div class="flex justify-between items-center">
                             <div>
                                 <h3 class="text-xs font-black uppercase italic">${r.name}</h3>
@@ -129,6 +143,16 @@
                         </div>
                     </div>
                 `).join('')}</div>`;
+            } else if(v === 'raceplay') {
+                main.innerHTML = `<h2 class="text-xl font-black italic text-white uppercase mb-6">Raceplay <span class="text-[#00ffcc]">Resonance</span></h2><div class="space-y-4">${raceplayFeed.map(f => `
+                    <div class="chat-post">
+                        <p class="text-[10px] leading-relaxed text-white/80">${f.post}</p>
+                        <div class="bot-reply">
+                            <p class="font-black text-[#00ffcc] uppercase mb-1">SOVEREIGN_BOT</p>
+                            <p class="opacity-60">${f.bot}</p>
+                        </div>
+                    </div>
+                `).join('')}</div><div class="mt-8 p-6 bg-red-500/10 border border-red-500/20 rounded-2xl text-center"><button onclick="triggerPenalty('SUBMIT_CONFESSION', 100)" class="text-[10px] font-black uppercase text-red-500">Submit Confession ($100)</button></div>`;
             } else if(v === 'drill') {
                 main.innerHTML = `<div class="flex flex-col items-center py-6">
                     <div class="wheel-container mb-12" id="wheel-obj">
